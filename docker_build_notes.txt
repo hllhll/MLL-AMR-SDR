@@ -1,0 +1,41 @@
+docker run --name ubuntu_bash --network host --rm -i -t ubuntu bash
+
+apt-get install software-properties-common
+
+
+Add these lines before running apt-add-repository command
+
+Timezone issue:
+	# ARG DEBIAN_FRONTEND=noninteractive
+	OR
+	ENV TZ=Europe/Minsk
+	RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+	RUN apt update && apt instal....
+
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    rm -rf /var/lib/apt/lists/*
+
+
+# https://wiki.gnuradio.org/index.php/InstallingGR#Ubuntu_PPA_Installation
+# add-apt-repository ppa:gnuradio/gnuradio-releases
+add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.8
+
+apt-get update && apt install -y nano gnuradio gr-osmosdr
+
+
+# docker run --name ubuntu_bash --network host --rm -i -t robotastic/gnuradio bash
+
+https://github.com/gnuradio/pybombs
+https://github.com/robotastic/docker-gnuradio
+
+pybombs install gr-osmosdr
+
+1) nohup ./record_decode_433.py &
+disown
+
+
+2)
+nohup python3 ./miltel_grc_server_tlv.py &
+disown
+
