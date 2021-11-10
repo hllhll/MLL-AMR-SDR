@@ -10,7 +10,7 @@ FCC: Somehow I was able to find **[this](https://fccid.io/ANATEL/01493-15-03592/
   Using this confirmed my observations and narrowed my baudrate down.
 
 **How did I do it**
-All information was recovered by open means, without access to firmware/opening device (Illeagel).
+All information was recovered by open means, without access to firmware/opening device (somewhat illegal).
 Mostly just analysis of transmittions and using a magnet to induce them.
 More information to be provided.
 
@@ -18,8 +18,15 @@ More information to be provided.
   * Frequency, In my area: 465.65 Mhz
   * Modulation: 4-Level FSK (4FSK)
   * Encoding: Texas Instruments / CC1120 - Data Whitning 
-  * Frame: Variable length, no "address field", With CRC16
+  * Frame: Variable length, No CC11xx "address field", With CRC16
   * Data: Encapsulated and hirachical Type, Len, Values (TLVs)
+  * SYNC Word:
+      * 32 bit Modulated as 2FSK (Seec CC1120 Datasheet, This is how it works)
+      * Binary: 10010011000010110101000111011110; Hex(First bit recived MSB) 93 0b 51 de (0x930b51de)
+      * Baseband: 1-High; 0-Low
+      * This is the default SYNC word in TI documentation and code examples.
+      * TI cc11xx SYMBOL_MAP_CFG = 00b
+  * Preamble Modulated as 2FSK: 101010....10 <sync>
 
 **Additional information:**
 Device wakes up some time, when it wakes up it reports it's timestamp to it's basesstation.
