@@ -6,7 +6,7 @@ Used in:
  * Dorot-valves MJ Residentual water meter (Embedded transmitter),
  * Others?
 
-FCC: Somehow I was able to find **[this](https://fccid.io/ANATEL/01493-15-03592/Manual_E-WEP-433/7F933824-B3EF-489A-9741-D98BEC47BBA5/PDF)**, [2](https://fccid.io/ANATEL/01493-15-03592/) after insane amount of online search
+FCC: Somehow I was able to find **[this](https://fccid.io/ANATEL/01493-15-03592/Manual_E-WEP-433/7F933824-B3EF-489A-9741-D98BEC47BBA5/PDF)**, [2](https://fccid.io/ANATEL/01493-15-03592/), [3](https://israelpatents.justice.gov.il/en/patent-file/details/223224) after insane amount of online search
   Using this confirmed my observations and narrowed my baudrate down.
 
 **How did I do it**
