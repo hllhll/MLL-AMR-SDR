@@ -4,8 +4,8 @@ from collections import deque
 import sys
 q = []#deque()
 
-#HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-HOST='10.100.102.1'
+HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
+#HOST='10.100.102.1'
 PORT = 55525        # Port to listen on (non-privileged ports are > 1023)
 
 #### BABABABABABABABABAB BABBAABBBBABAABABABBBAAABAAAA
