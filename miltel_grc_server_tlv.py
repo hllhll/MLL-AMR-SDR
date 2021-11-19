@@ -464,9 +464,12 @@ def out_data(s):
         elif tlv_container.tag.name == "METER_READING":
             f_out = f_readings
             # Y Does this print PICKACHU_1: bytearray(b'\xb2\x19\x00\x00\x00\x00\\')
-            reading_data = tlv_container.data[0:7]
-            reading_data_counter = tlv_container.data[7]
-            s_all_data = "Reading: " + str(unpack48(reading_data)) + " counter: " + str(reading_data_counter)
+            if(len(tlv_container.data)<=7):
+                s_all_data = "Reading, Error/unknown? : " + str(tlv_container)
+            else:
+                reading_data = tlv_container.data[0:7]
+                reading_data_counter = tlv_container.data[7]
+                s_all_data = "Reading: " + str(unpack48(reading_data)) + " counter: " + str(reading_data_counter)
         else:
             f_out = f_others
             s_all_data = "Other: " + str(tlv_container)
