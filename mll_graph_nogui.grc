@@ -8,7 +8,7 @@ options:
     description: ''
     gen_cmake: 'On'
     gen_linking: dynamic
-    generate_options: no_gui
+    generate_options: qt_gui
     hier_block_src_path: '.:'
     id: record_decode_433
     max_nouts: '0'
@@ -286,7 +286,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 1244.0]
+    coordinate: [104, 1344.0]
     rotation: 0
     state: disabled
 - name: min_power_db
@@ -434,7 +434,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 1220.0]
+    coordinate: [808, 1076.0]
     rotation: 0
     state: enabled
 - name: analog_quadrature_demod_cf_0_0_0_1_0
@@ -588,7 +588,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1176, 1072.0]
+    coordinate: [1176, 1000.0]
     rotation: 0
     state: disabled
 - name: blocks_float_to_char_1
@@ -736,6 +736,22 @@ blocks:
     coordinate: [1640, 1316.0]
     rotation: 0
     state: enabled
+- name: blocks_tagged_file_sink_0
+  id: blocks_tagged_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    samp_rate: decoding_samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1024, 1356.0]
+    rotation: 0
+    state: enabled
 - name: blocks_tcp_server_sink_0
   id: blocks_tcp_server_sink
   parameters:
@@ -881,6 +897,201 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1704, 1184.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nTag Rewrite\n\"\"\"\n\nimport numpy as np\nfrom gnuradio\
+      \ import gr\nimport pmt\n\nlog = gr.logger(\"TR\")\nlog.set_level(\"DEBUG\"\
+      )\n\nclass blk(gr.sync_block):  # other base classes are basic_block, decim_block,\
+      \ interp_block\n    \"\"\"TagRewrite - rewrite tag to any value\"\"\"\n\n  \
+      \  def __init__(self, tag_name=\"\", target_tag_name=\"\"):  # only default\
+      \ arguments here\n        \"\"\"arguments to this function show up as parameters\
+      \ in GRC\"\"\"\n        gr.sync_block.__init__(\n            self,\n       \
+      \     name='Tag Copy',   # will show up in GRC\n            in_sig=[np.complex64],\n\
+      \            out_sig=[np.complex64]\n        )\n        # if an attribute with\
+      \ the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n        self.tag_name = pmt.intern(tag_name)\n  \
+      \      self.target_tag_name = pmt.intern(target_tag_name)\n\n        # pass\
+      \ through tags\n        self.set_tag_propagation_policy(gr.TPP_ALL_TO_ALL )\n\
+      \n        log.debug(\"TR init done\")\n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"Update tag value\"\"\"\n        output_items[0][:] = input_items[0]\n\
+      \n        nr = len(input_items[0])\n        tags = self.get_tags_in_window(0,\
+      \ 0, nr, self.tag_name)\n        for tag in tags:\n            #value = pmt.to_python(tag.value)\n\
+      \            self.add_item_tag(0, tag.offset, self.target_tag_name, tag.value)\n\
+      \n        return len(output_items[0])"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag_name: '"squelch_sob"'
+    target_tag_name: '"burst"'
+  states:
+    _io_cache: ('Tag Copy', 'blk', [('tag_name', "''"), ('target_tag_name', "''")],
+      [('0', 'complex', 1)], [('0', 'complex', 1)], 'TagRewrite - rewrite tag to any
+      value', ['tag_name', 'target_tag_name'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [608, 1324.0]
+    rotation: 0
+    state: disabled
+- name: epy_block_1_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nTag Rewrite\n\"\"\"\n\nimport numpy as np\nfrom gnuradio\
+      \ import gr\nimport pmt\n\nlog = gr.logger(\"TR\")\nlog.set_level(\"DEBUG\"\
+      )\n\nclass blk(gr.sync_block):  # other base classes are basic_block, decim_block,\
+      \ interp_block\n    \"\"\"TagRewrite - rewrite tag to any value\"\"\"\n\n  \
+      \  def __init__(self, tag_name=\"\", target_tag_name=\"\"):  # only default\
+      \ arguments here\n        \"\"\"arguments to this function show up as parameters\
+      \ in GRC\"\"\"\n        gr.sync_block.__init__(\n            self,\n       \
+      \     name='Tag Copy',   # will show up in GRC\n            in_sig=[np.complex64],\n\
+      \            out_sig=[np.complex64]\n        )\n        # if an attribute with\
+      \ the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n        self.tag_name = pmt.intern(tag_name)\n  \
+      \      self.target_tag_name = pmt.intern(target_tag_name)\n\n        # pass\
+      \ through tags\n        self.set_tag_propagation_policy(gr.TPP_ALL_TO_ALL )\n\
+      \n        log.debug(\"TR init done\")\n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"Update tag value\"\"\"\n        output_items[0][:] = input_items[0]\n\
+      \n        nr = len(input_items[0])\n        tags = self.get_tags_in_window(0,\
+      \ 0, nr, self.tag_name)\n        for tag in tags:\n            #value = pmt.to_python(tag.value)\n\
+      \            self.add_item_tag(0, tag.offset, self.target_tag_name, tag.value)\n\
+      \n        return len(output_items[0])"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag_name: '"squelch_eob"'
+    target_tag_name: '"burst"'
+  states:
+    _io_cache: ('Tag Copy', 'blk', [('tag_name', "''"), ('target_tag_name', "''")],
+      [('0', 'complex', 1)], [('0', 'complex', 1)], 'TagRewrite - rewrite tag to any
+      value', ['tag_name', 'target_tag_name'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [616, 1412.0]
+    rotation: 0
+    state: disabled
+- name: epy_block_2
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nTag Rewrite\n\"\"\"\n\nimport numpy as np\nfrom gnuradio\
+      \ import gr\nimport pmt\n\nlog = gr.logger(\"TR\")\nlog.set_level(\"DEBUG\"\
+      )\n\nclass blk(gr.sync_block):  # other base classes are basic_block, decim_block,\
+      \ interp_block\n    \"\"\"TagRewrite - rewrite tag to any value\"\"\"\n\n  \
+      \  def __init__(self, tag_name=\"\", tag_value=1):  # only default arguments\
+      \ here\n        \"\"\"arguments to this function show up as parameters in GRC\"\
+      \"\"\n        gr.sync_block.__init__(\n            self,\n            name='Tag\
+      \ Rewrite',   # will show up in GRC\n            in_sig=[np.complex64],\n  \
+      \          out_sig=[np.complex64]\n        )\n        # if an attribute with\
+      \ the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n        self.tag_name = pmt.intern(tag_name)\n  \
+      \      self.tag_value = pmt.intern(str(tag_value))\n\n        # pass through\
+      \ tags\n        self.set_tag_propagation_policy(gr.TPP_ALL_TO_ALL )\n\n    \
+      \    log.debug(\"TR init done\")\n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"Update tag value\"\"\"\n        output_items[0][:] = input_items[0]\n\
+      \n        nr = len(input_items[0])\n        tags = self.get_tags_in_window(0,\
+      \ 0, nr, self.tag_name)\n        for tag in tags:\n            self.add_item_tag(0,\
+      \ tag.offset, self.tag_name, self.tag_value)\n\n        return len(output_items[0])"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag_name: '"squelch_sob"'
+    tag_value: 'True'
+  states:
+    _io_cache: ('Tag Rewrite', 'blk', [('tag_name', "''"), ('tag_value', '1')], [('0',
+      'complex', 1)], [('0', 'complex', 1)], 'TagRewrite - rewrite tag to any value',
+      ['tag_name', 'tag_value'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [336, 1316.0]
+    rotation: 0
+    state: disabled
+- name: epy_block_2_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nTag Rewrite\n\"\"\"\n\nimport numpy as np\nfrom gnuradio\
+      \ import gr\nimport pmt\n\nlog = gr.logger(\"TR\")\nlog.set_level(\"DEBUG\"\
+      )\n\nclass blk(gr.sync_block):  # other base classes are basic_block, decim_block,\
+      \ interp_block\n    \"\"\"TagRewrite - rewrite tag to any value\"\"\"\n\n  \
+      \  def __init__(self, tag_name=\"\", tag_value=1):  # only default arguments\
+      \ here\n        \"\"\"arguments to this function show up as parameters in GRC\"\
+      \"\"\n        gr.sync_block.__init__(\n            self,\n            name='Tag\
+      \ Rewrite',   # will show up in GRC\n            in_sig=[np.complex64],\n  \
+      \          out_sig=[np.complex64]\n        )\n        # if an attribute with\
+      \ the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n        self.tag_name = pmt.intern(tag_name)\n  \
+      \      self.tag_value = pmt.intern(str(tag_value))\n\n        # pass through\
+      \ tags\n        self.set_tag_propagation_policy(gr.TPP_ALL_TO_ALL )\n\n    \
+      \    log.debug(\"TR init done\")\n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"Update tag value\"\"\"\n        output_items[0][:] = input_items[0]\n\
+      \n        nr = len(input_items[0])\n        tags = self.get_tags_in_window(0,\
+      \ 0, nr, self.tag_name)\n        for tag in tags:\n            self.add_item_tag(0,\
+      \ tag.offset, self.tag_name, self.tag_value)\n\n        return len(output_items[0])"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag_name: '"squelch_eob"'
+    tag_value: 'False'
+  states:
+    _io_cache: ('Tag Rewrite', 'blk', [('tag_name', "''"), ('tag_value', '1')], [('0',
+      'complex', 1)], [('0', 'complex', 1)], 'TagRewrite - rewrite tag to any value',
+      ['tag_name', 'tag_value'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [328, 1404.0]
+    rotation: 0
+    state: disabled
+- name: epy_block_2_1
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nTag Rewrite\n\"\"\"\n\nimport numpy as np\nfrom gnuradio\
+      \ import gr\nimport pmt\n\nlog = gr.logger(\"TR\")\nlog.set_level(\"DEBUG\"\
+      )\n\nclass blk(gr.sync_block):  # other base classes are basic_block, decim_block,\
+      \ interp_block\n    \"\"\"TagRewrite - rewrite tag to any value\"\"\"\n\n  \
+      \  def __init__(self, tag_nameT=\"squelch_sob\", tag_nameF=\"squelch_eob\"):\
+      \  # only default arguments here\n        \"\"\"arguments to this function show\
+      \ up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n         \
+      \   self,\n            name='Tag Manipulate',   # will show up in GRC\n    \
+      \        in_sig=[np.complex64],\n            out_sig=[np.complex64]\n      \
+      \  )\n        # if an attribute with the same name as a parameter is found,\n\
+      \        # a callback is registered (properties work, too).\n        self.tag_nameT\
+      \ = pmt.intern(tag_nameT)\n        self.tag_nameF = pmt.intern(tag_nameF)\n\n\
+      \        # pass through tags\n        self.set_tag_propagation_policy(gr.TPP_DONT\
+      \ )\n\n        log.debug(\"TR init done\")\n\n    def work(self, input_items,\
+      \ output_items):\n        \"\"\"Update tag value\"\"\"\n        output_items[0][:]\
+      \ = input_items[0]\n\n        nr = len(input_items[0])\n        tags = self.get_tags_in_window(0,\
+      \ 0, nr, self.tag_nameT)\n        for tag in tags:\n            self.add_item_tag(0,\
+      \ tag.offset, pmt.intern(str(\"burst\")), pmt.from_bool(True))\n        tags\
+      \ = self.get_tags_in_window(0, 0, nr, self.tag_nameF)\n        for tag in tags:\n\
+      \            self.add_item_tag(0, tag.offset, pmt.intern(str(\"burst\")), pmt.from_bool(False))\n\
+      \        return len(output_items[0])"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag_nameF: '"squelch_eob"'
+    tag_nameT: '"squelch_sob"'
+  states:
+    _io_cache: ('Tag Manipulate', 'blk', [('tag_nameT', "'squelch_sob'"), ('tag_nameF',
+      "'squelch_eob'")], [('0', 'complex', 1)], [('0', 'complex', 1)], 'TagRewrite
+      - rewrite tag to any value', ['tag_nameF', 'tag_nameT'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [48, 1236.0]
     rotation: 0
     state: enabled
 - name: low_pass_filter_0
@@ -1181,6 +1392,103 @@ blocks:
     coordinate: [1848, 864.0]
     rotation: 0
     state: disabled
+- name: qtgui_time_sink_x_1
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '""'
+    nconnections: '1'
+    size: 1024*5*3-3
+    srate: decoding_samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_TAG
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '"burst"'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '3'
+    ymin: '-3'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [960, 1216.0]
+    rotation: 0
+    state: true
 - name: qtgui_time_sink_x_1_0
   id: qtgui_time_sink_x
   parameters:
@@ -1659,6 +1967,8 @@ blocks:
 connections:
 - [analog_pwr_squelch_xx_0, '0', analog_quadrature_demod_cf_0_0_0_1_0, '0']
 - [analog_pwr_squelch_xx_0, '0', blocks_file_sink_0, '0']
+- [analog_pwr_squelch_xx_0, '0', epy_block_2, '0']
+- [analog_pwr_squelch_xx_0, '0', epy_block_2_1, '0']
 - [analog_quadrature_demod_cf_0_0_0_1_0, '0', blocks_delay_0_0, '0']
 - [analog_quadrature_demod_cf_0_0_0_1_0, '0', dc_blocker_xx_0_0, '0']
 - [analog_quadrature_demod_cf_0_0_0_1_0_0, '0', qtgui_time_sink_x_0_0, '0']
@@ -1683,6 +1993,13 @@ connections:
 - [digital_symbol_sync_xx_1, '0', blocks_float_to_complex_0, '0']
 - [epy_block_0, '0', blocks_multiply_const_vxx_1, '0']
 - [epy_block_0, '0', qtgui_time_sink_x_0, '1']
+- [epy_block_1, '0', epy_block_2_0, '0']
+- [epy_block_1_0, '0', blocks_tagged_file_sink_0, '0']
+- [epy_block_1_0, '0', qtgui_time_sink_x_1, '0']
+- [epy_block_2, '0', epy_block_1, '0']
+- [epy_block_2_0, '0', epy_block_1_0, '0']
+- [epy_block_2_1, '0', blocks_tagged_file_sink_0, '0']
+- [epy_block_2_1, '0', qtgui_time_sink_x_1, '0']
 - [low_pass_filter_0, '0', rational_resampler_xxx_0, '0']
 - [rational_resampler_xxx_0, '0', analog_pwr_squelch_xx_0, '0']
 - [rational_resampler_xxx_0, '0', analog_quadrature_demod_cf_0_0_0_1_0_0, '0']
