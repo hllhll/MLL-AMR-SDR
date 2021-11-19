@@ -445,6 +445,7 @@ def out_data(s):
     s_checksum_part="(" + tohex(b[2+int_len:2+int_len+1 +1]) + ")"
     payload_part = (b[11:2+int_len])
     s_all_data = s_parsed_parts+tohex(payload_part)+s_checksum_part+tohex(b[2+int_len+1 +1:])
+    s_all_data_bak = s_all_data
 
     f_out = f_others
     if not crc_ok:
@@ -465,7 +466,8 @@ def out_data(s):
             f_out = f_readings
             # Y Does this print PICKACHU_1: bytearray(b'\xb2\x19\x00\x00\x00\x00\\')
             if(len(tlv_container.data)<=7):
-                s_all_data = "Reading, Error/unknown? : " + str(tlv_container)
+                #s_all_data = "Reading, Error/unknown? : " + str(tlv_container)
+                s_all_data = "Reading, Error/unknown? : " + s_all_data_bak
             else:
                 reading_data = tlv_container.data[0:7]
                 reading_data_counter = tlv_container.data[7]
