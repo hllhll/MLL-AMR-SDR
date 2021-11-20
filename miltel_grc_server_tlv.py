@@ -493,7 +493,9 @@ import traceback
 if True:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         conn = s.connect((HOST, PORT))
-        s.settimeout(0.2)
+        #BUG: TODO: This was originally 0.2; But after messing with throttling speef from file, this messes up
+        #TODO: Drop this thing, redesign!
+        s.settimeout(1)
         #conn, addr = s.accept()
         if True: #with conn:
             q.clear()

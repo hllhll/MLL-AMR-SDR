@@ -1,0 +1,4 @@
+meter id ERR Flags: 00  F:( 6)  102017167
+when throttled down to decoding_samp_rate/12 instead of decoding_samp_rate/4;
+The next record is not shown:
+ERR Flags: 00  F:( 6)  102017167 T:( 1)       2051 # 18  <10 18 a7 11 66 06 33 02 00 01 48>35 01 b5 66 40 00 2c 2b af 1a 7a cd f8 10 6a(b0 d1)c8 43
