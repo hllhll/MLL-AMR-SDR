@@ -28,7 +28,6 @@ import sip
 from gnuradio import analog
 import math
 from gnuradio import blocks
-import pmt
 from gnuradio import digital
 from gnuradio import filter
 from gnuradio import gr
@@ -40,6 +39,8 @@ from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
 import epy_block_0
 import epy_block_2_1
+import osmosdr
+import time
 
 from gnuradio import qtgui
 
@@ -101,6 +102,26 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self._minimal_amplitude_range = Range(0, 0.1, 0.00001, 0.001300, 200)
         self._minimal_amplitude_win = RangeWidget(self._minimal_amplitude_range, self.set_minimal_amplitude, 'minimal_amplitude', "counter_slider", float)
         self.top_grid_layout.addWidget(self._minimal_amplitude_win)
+        self.rtlsdr_source_0 = osmosdr.source(
+            args="numchan=" + str(1) + " " + "rtl_tcp=10.100.102.1"
+        )
+        self.rtlsdr_source_0.set_time_unknown_pps(osmosdr.time_spec_t())
+        self.rtlsdr_source_0.set_sample_rate(samp_rate_cap)
+        self.rtlsdr_source_0.set_center_freq(center_tune_freq, 0)
+        self.rtlsdr_source_0.set_freq_corr(0, 0)
+        self.rtlsdr_source_0.set_dc_offset_mode(0, 0)
+        self.rtlsdr_source_0.set_iq_balance_mode(0, 0)
+        self.rtlsdr_source_0.set_gain_mode(False, 0)
+        self.rtlsdr_source_0.set_gain(38, 0)
+        self.rtlsdr_source_0.set_if_gain(8, 0)
+        self.rtlsdr_source_0.set_bb_gain(9, 0)
+        self.rtlsdr_source_0.set_antenna('', 0)
+        self.rtlsdr_source_0.set_bandwidth(0, 0)
+        self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
+                interpolation=decoding_samp_rate,
+                decimation=int(samp_rate_cap),
+                taps=None,
+                fractional_bw=0.0001)
         self.qtgui_time_sink_x_2 = qtgui.time_sink_f(
             8000*4, #size
             decoding_samp_rate, #samp_rate
@@ -196,7 +217,7 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self._qtgui_time_sink_x_1_0_win = sip.wrapinstance(self.qtgui_time_sink_x_1_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_time_sink_x_1_0_win)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
-            12000, #size
+            5000, #size
             decoding_samp_rate, #samp_rate
             "", #name
             2 #number of inputs
@@ -242,6 +263,15 @@ class record_decode_433(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        self.low_pass_filter_0 = filter.fir_filter_ccf(
+            1,
+            firdes.low_pass(
+                1,
+                samp_rate_cap,
+                6000,
+                3500,
+                firdes.WIN_HAMMING,
+                6.76))
         self.epy_block_2_1 = epy_block_2_1.blk(tag_nameT="squelch_sob", tag_nameF="squelch_eob")
         self.epy_block_0 = epy_block_0.blk(reset_tag="squelch_sob", reset_tag_value="", lock_time=20*decoding_samp_per_sym, end_tag="'squelch_eob")
         self.digital_symbol_sync_xx_1 = digital.symbol_sync_ff(
@@ -258,13 +288,13 @@ class record_decode_433(gr.top_block, Qt.QWidget):
             [128])
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(constellation_4fsk)
         self.dc_blocker_xx_0_0 = filter.dc_blocker_ff(acquire, True)
-        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, decoding_samp_rate/12,True)
         self.blocks_threshold_ff_0 = blocks.threshold_ff(0.000000000001, 0.000000000001, 0)
         self.blocks_tcp_server_sink_0 = blocks.tcp_server_sink(gr.sizeof_char*1, '0.0.0.0', 55525, False)
+        self.blocks_tagged_file_sink_0 = blocks.tagged_file_sink(gr.sizeof_gr_complex*1, decoding_samp_rate)
         self.blocks_sub_xx_0 = blocks.sub_ff(1)
         self.blocks_repeat_0_0 = blocks.repeat(gr.sizeof_float*1, decoding_samp_per_sym)
-        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_char*1)
         self.blocks_multiply_xx_1 = blocks.multiply_vcc(1)
+        self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_multiply_const_vxx_1 = blocks.multiply_const_ff(0.5)
         self.blocks_multiply_const_vxx_0_0 = blocks.multiply_const_ff(2)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(10000000)
@@ -272,13 +302,12 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self.blocks_float_to_complex_1 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_float_to_char_1 = blocks.float_to_char(1, 1)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, 'C:\\hll\\miltel_no_fhss\\final_decode_server\\MLL-AMR-SDR\\bugs\\timing_related\\all_trimmed_noout.complex', False, 0, 0)
-        self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
         self.blocks_delay_0_0 = blocks.delay(gr.sizeof_float*1, (acquire-1)*2)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
         self.blocks_add_const_vxx_1 = blocks.add_const_ff(-minimal_amplitude)
         self.blocks_add_const_vxx_0 = blocks.add_const_ff(-3)
+        self.analog_sig_source_x_0 = analog.sig_source_c(samp_rate_cap, analog.GR_COS_WAVE, -offset_tune, 1, 0, 0)
         self.analog_quadrature_demod_cf_0_0_0_1_0 = analog.quadrature_demod_cf(decoding_samp_rate/(2*math.pi*fsk_deviation_hz))
         self.analog_pwr_squelch_xx_1 = analog.pwr_squelch_cc(-400, 1, 0, True)
         self.analog_const_source_x_0 = analog.sig_source_f(0, analog.GR_CONST_WAVE, 0, 0, minimal_amplitude)
@@ -292,6 +321,7 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self.connect((self.analog_pwr_squelch_xx_1, 0), (self.epy_block_2_1, 0))
         self.connect((self.analog_quadrature_demod_cf_0_0_0_1_0, 0), (self.blocks_delay_0_0, 0))
         self.connect((self.analog_quadrature_demod_cf_0_0_0_1_0, 0), (self.dc_blocker_xx_0_0, 0))
+        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_float_to_char_1, 0))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_repeat_0_0, 0))
         self.connect((self.blocks_add_const_vxx_1, 0), (self.blocks_multiply_const_vxx_0, 0))
@@ -300,8 +330,6 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_delay_0_0, 0), (self.blocks_sub_xx_0, 0))
         self.connect((self.blocks_delay_0_0, 0), (self.epy_block_0, 0))
         self.connect((self.blocks_delay_0_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.blocks_file_source_0, 0), (self.blocks_throttle_0, 0))
-        self.connect((self.blocks_float_to_char_1, 0), (self.blocks_null_sink_0, 0))
         self.connect((self.blocks_float_to_char_1, 0), (self.blocks_tcp_server_sink_0, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.blocks_float_to_complex_1, 0), (self.blocks_multiply_xx_1, 1))
@@ -310,19 +338,23 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_threshold_ff_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0_0, 0), (self.blocks_add_const_vxx_0, 0))
         self.connect((self.blocks_multiply_const_vxx_1, 0), (self.digital_symbol_sync_xx_1, 0))
+        self.connect((self.blocks_multiply_xx_0, 0), (self.low_pass_filter_0, 0))
         self.connect((self.blocks_multiply_xx_1, 0), (self.analog_pwr_squelch_xx_1, 0))
         self.connect((self.blocks_repeat_0_0, 0), (self.qtgui_time_sink_x_1_0, 0))
         self.connect((self.blocks_sub_xx_0, 0), (self.epy_block_0, 1))
         self.connect((self.blocks_threshold_ff_0, 0), (self.blocks_float_to_complex_1, 0))
         self.connect((self.blocks_threshold_ff_0, 0), (self.qtgui_time_sink_x_2, 2))
-        self.connect((self.blocks_throttle_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.blocks_multiply_xx_1, 0))
         self.connect((self.dc_blocker_xx_0_0, 0), (self.blocks_sub_xx_0, 1))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.digital_symbol_sync_xx_1, 0), (self.blocks_float_to_complex_0, 0))
         self.connect((self.epy_block_0, 0), (self.blocks_multiply_const_vxx_1, 0))
         self.connect((self.epy_block_0, 0), (self.qtgui_time_sink_x_0, 1))
         self.connect((self.epy_block_2_1, 0), (self.analog_quadrature_demod_cf_0_0_0_1_0, 0))
+        self.connect((self.epy_block_2_1, 0), (self.blocks_tagged_file_sink_0, 0))
+        self.connect((self.low_pass_filter_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.blocks_multiply_xx_1, 0))
+        self.connect((self.rtlsdr_source_0, 0), (self.blocks_multiply_xx_0, 0))
 
 
     def closeEvent(self, event):
@@ -345,6 +377,9 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self.samp_rate_cap = samp_rate_cap
         self.set_available_bw(self.samp_rate_cap-self.offset_tune*2)
         self.set_cap_sps(int(self.samp_rate_cap/self.sym_rate))
+        self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate_cap)
+        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate_cap, 6000, 3500, firdes.WIN_HAMMING, 6.76))
+        self.rtlsdr_source_0.set_sample_rate(self.samp_rate_cap)
 
     def get_offset_tune(self):
         return self.offset_tune
@@ -353,6 +388,7 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self.offset_tune = offset_tune
         self.set_available_bw(self.samp_rate_cap-self.offset_tune*2)
         self.set_center_tune_freq(self.center_freq-self.offset_tune)
+        self.analog_sig_source_x_0.set_frequency(-self.offset_tune)
 
     def get_decoding_samp_per_sym(self):
         return self.decoding_samp_per_sym
@@ -392,7 +428,6 @@ class record_decode_433(gr.top_block, Qt.QWidget):
     def set_decoding_samp_rate(self, decoding_samp_rate):
         self.decoding_samp_rate = decoding_samp_rate
         self.analog_quadrature_demod_cf_0_0_0_1_0.set_gain(self.decoding_samp_rate/(2*math.pi*self.fsk_deviation_hz))
-        self.blocks_throttle_0.set_sample_rate(self.decoding_samp_rate/12)
         self.qtgui_time_sink_x_0.set_samp_rate(self.decoding_samp_rate)
         self.qtgui_time_sink_x_1_0.set_samp_rate(self.decoding_samp_rate)
         self.qtgui_time_sink_x_2.set_samp_rate(self.decoding_samp_rate)
@@ -408,6 +443,7 @@ class record_decode_433(gr.top_block, Qt.QWidget):
 
     def set_center_tune_freq(self, center_tune_freq):
         self.center_tune_freq = center_tune_freq
+        self.rtlsdr_source_0.set_center_freq(self.center_tune_freq, 0)
 
     def get_cap_sps(self):
         return self.cap_sps

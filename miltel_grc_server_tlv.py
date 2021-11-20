@@ -391,6 +391,8 @@ def out_data(s):
     
     #if len(all_data)<6
     #    return False
+    if len(b)<2:
+        return
     int_len = b[1]
     crc_ok = check_crc(b, int_len)
     s_crc_ok = "ERR"
@@ -498,13 +500,14 @@ def out_data(s):
 
 import traceback
 #while True:
-raw_data = open("raw.bin", "wb")
+#raw_data = open("raw.bin", "wb")
 if True:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         conn = s.connect((HOST, PORT))
         #BUG: TODO: This was originally 0.2; But after messing with throttling speef from file, this messes up
         #TODO: Drop this thing, redesign!
-        s.settimeout(1)
+        #Note: bug fixed? was it due to the preamble detection not registring issue?
+        s.settimeout(0.2)
         #conn, addr = s.accept()
         if True: #with conn:
             q.clear()
@@ -513,7 +516,7 @@ if True:
                     data = s.recv(1024)
                     if not data:
                         break # connection closed?
-                    raw_data.write(data)
+                    # raw_data.write(data)
                     #data = bytearray(data)
                     data = from_signed_bytearray_to_string(data)
                     q.extend(data)
