@@ -1,8 +1,11 @@
 import socket
+import os
 import time
 from collections import deque
 import sys
 q = []#deque()
+
+VERBOSE = 1
 
 HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
 #HOST='10.100.102.1'
@@ -146,13 +149,18 @@ def check_crc(all_data, int_len):
 PREAMBLE_SYNC_FOUND = False
 
 def process(q):
+    global PREAMBLE_SYNC_FOUND
     index = find_sync(q)
     while index is not False:
+        if VERBOSE>=2:
+            print ("FOUND SYNC")
         PREAMBLE_SYNC_FOUND = True # Either 1st SYNC or SYNC at the next packet
         if index>=0:
             leftover = q[0:index]
             if len(leftover)>0:
                 out_data(leftover)
+                if VERBOSE>=3:
+                    print(tohex(leftover))
             # Cut after - New frame
             q = q[index+len(PREAMBLE_SYNC):]
             index = find_sync(q)
@@ -490,6 +498,7 @@ def out_data(s):
 
 import traceback
 #while True:
+raw_data = open("raw.bin", "wb")
 if True:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         conn = s.connect((HOST, PORT))
@@ -504,11 +513,18 @@ if True:
                     data = s.recv(1024)
                     if not data:
                         break # connection closed?
+                    raw_data.write(data)
                     #data = bytearray(data)
                     data = from_signed_bytearray_to_string(data)
                     q.extend(data)
+                    if VERBOSE>=2:
+                        print("Try-process OK")
                     q = process(q)
                 except socket.timeout:
+                    if VERBOSE>=2:
+                        print("Try-except timeout")
+                        print("len %d PREAMBLE_SYNC_FOUND: %r" % (len(q),PREAMBLE_SYNC_FOUND))
+                    # Bug this doesn't work? I.E Timeouts are bad?
                     if len(q)>0 and PREAMBLE_SYNC_FOUND:
                         out_data(q)
                         q.clear()
