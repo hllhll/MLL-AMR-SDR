@@ -298,7 +298,7 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self.blocks_multiply_const_vxx_1 = blocks.multiply_const_ff(0.5)
         self.blocks_multiply_const_vxx_0_0 = blocks.multiply_const_ff(2)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(10000000)
-        self.blocks_moving_average_xx_0 = blocks.moving_average_ff(decoding_samp_per_sym*10, 1, 4000, 1)
+        self.blocks_moving_average_xx_0 = blocks.moving_average_ff(decoding_samp_per_sym*20, 1, 4000, 1)
         self.blocks_float_to_complex_1 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_float_to_char_1 = blocks.float_to_char(1, 1)
@@ -397,7 +397,7 @@ class record_decode_433(gr.top_block, Qt.QWidget):
         self.decoding_samp_per_sym = decoding_samp_per_sym
         self.set_acquire(18*self.decoding_samp_per_sym)
         self.set_decoding_samp_rate((self.sym_rate*self.decoding_samp_per_sym))
-        self.blocks_moving_average_xx_0.set_length_and_scale(self.decoding_samp_per_sym*10, 1)
+        self.blocks_moving_average_xx_0.set_length_and_scale(self.decoding_samp_per_sym*20, 1)
         self.blocks_repeat_0_0.set_interpolation(self.decoding_samp_per_sym)
 
     def get_center_freq(self):
