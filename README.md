@@ -16,6 +16,7 @@ More information to be provided.
 
 **Tech spec:**
   * Frequency, In my area: 465.65 Mhz
+    * Frequency when invoking TX with magnet is different for some reason, ~433Mhz
   * Modulation: 4-Level FSK (4FSK)
   * Encoding: Texas Instruments / CC1120 - Data Whitning 
   * Frame: Variable length, No CC11xx "address field", With CRC16
